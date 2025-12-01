@@ -9,8 +9,8 @@ import requests as req
 from PIL import Image
 import shutil
 
-load_dotenv(dotenv_path="/Users/tedzarek/Documents/Tradebook_PO/ISBNdb_API_Key.env")
-api_key = os.environ.get("API_KEY")
+load_dotenv(dotenv_path="./dist/ISBNdb_API_Key.env")
+api_key = os.getenv("API_KEY")
 print(api_key)
 
 cols_to_delete = ['Purchase Order', 'Item #', 'Author 2', 'Units', 'Discount', 'Discount Code', 'Format', 'Secondary Store Category', 'BISAC Category Code', 'Publisher Code', 'SAN', 'Markup Tags', 'UPC', 'Number of Pages', 'Dimensions', 'Links']
