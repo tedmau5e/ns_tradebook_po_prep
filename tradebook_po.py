@@ -197,7 +197,8 @@ def parse_xml_data_to_df(file_path):
 
     df = pd.DataFrame(data, columns=columns, index=None)
     excel_file_name = Path(file_path).stem + ".xlsx"
-    df.to_excel(excel_file_name, index=False)
+    excel_save_location = os.path.join(desktop_path, excel_file_name)
+    df.to_excel(excel_save_location, index=False)
     print(df)
     return df
 
