@@ -97,6 +97,8 @@ vendor_dict = {
     "MIO": "Longleaf Services, Inc",
 }
 
+smart_quotes_map = {"“": '"', "”": '"', "‘": "'", "’": "'"}
+
 current_date = datetime.now()
 date_string = current_date.strftime("%m%d%y")
 
@@ -507,7 +509,10 @@ def change_po(
         print(df)
         df = df.apply(set_cover, axis=1)
         df["Web Description"] = df["upccode"].apply(get_images_and_desc)
-        df["Web Description"] = df["Web Description"].str.replace("’", "'", regex=False)
+        for smart, standard in smart_quotes_map.items():
+            df["Web Description"] = df["Web Description"].str.replace(
+                smart, standard, regex=False
+            )
         resize_covers(dl_folder_home, f"{date_string}-resized_images", (600, 600))
 
         archive_name = os.path.join(desktop_path, f"{resized_images}-compressed")
