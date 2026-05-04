@@ -507,6 +507,7 @@ def change_po(
         print(df)
         df = df.apply(set_cover, axis=1)
         df["Web Description"] = df["upccode"].apply(get_images_and_desc)
+        df["Web Description"] = df["Web Description"].str.replace("’", "'", regex=False)
         resize_covers(dl_folder_home, f"{date_string}-resized_images", (600, 600))
 
         archive_name = os.path.join(desktop_path, f"{resized_images}-compressed")
