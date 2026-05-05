@@ -241,30 +241,28 @@ def move_start_article(text, prefixes):
 def item_name_number(row):
     if str(row["Subtitle"]) != "nan":
         row["item_name_number"] = (
-            f"{row['displayname'] + '-' + row['Subtitle'] + '-' + str(row['upccode'])}"
+            f"{row['Display_Name'] + '-' + row['Subtitle'] + '-' + str(row['UPC_Code'])}"
         )
-        row["custitem_nsts_csic_long_title"] = (
-            f"{row['displayname'].strip() + ': ' + row['Subtitle']}"
-        )
+        row["Long_Title"] = f"{row['Display_Name'].strip() + ': ' + row['Subtitle']}"
     else:
-        row["item_name_number"] = f"{row['displayname'] + '-' + str(row['upccode'])}"
-        row["custitem_nsts_csic_long_title"] = f"{row['displayname']}"
+        row["item_name_number"] = f"{row['Display_Name'] + '-' + str(row['UPC_Code'])}"
+        row["Long_Title"] = f"{row['Display_Name']}"
     return row
 
 
 def assign_dept(row):
-    if row["class"].startswith("TRN"):
-        row["department"] = "Tradebooks : TR Nonfiction (TRN)"
-        row["incomeaccount"] = "325"
-    elif row["class"].startswith("TRF"):
-        row["department"] = "Tradebooks : TR Fiction & Lit (TRF)"
-        row["incomeaccount"] = "325"
-    elif row["class"].startswith("TRZ"):
-        row["department"] = "Tradebooks : TR Gifts (TRZ)"
-        row["incomeaccount"] = "1561"
-    elif row["class"].startswith("TRR"):
-        row["department"] = "Tradebooks : TR Reference (TRR)"
-        row["incomeaccount"] = "1549"
+    if row["Class"].startswith("TRN"):
+        row["Department"] = "Tradebooks : TR Nonfiction (TRN)"
+        row["Income_Account"] = "325"
+    elif row["Class"].startswith("TRF"):
+        row["Department"] = "Tradebooks : TR Fiction & Lit (TRF)"
+        row["Income_Account"] = "325"
+    elif row["Class"].startswith("TRZ"):
+        row["Department"] = "Tradebooks : TR Gifts (TRZ)"
+        row["Income_Account"] = "1561"
+    elif row["Class"].startswith("TRR"):
+        row["Department"] = "Tradebooks : TR Reference (TRR)"
+        row["Income_Account"] = "1549"
     return row
 
 
@@ -284,39 +282,39 @@ def rename_and_add_cols(df):
 
     df1.rename(
         columns={
-            "ISBN 10": "custitem_nsts_csic_isbn",
-            "EAN": "upccode",
-            "Title": "displayname",
-            "Author": "custitem_nsts_csic_author",
-            "List Price": "listprice",
-            "Cost": "costestimate",
-            "Edition": "custitem_nsts_csic_edition",
-            "PubDate": "custitem_nsts_csic_pub_date",
-            "Print Run": "custitem_nsts_csic_printing",
-            "Format Description": "custitem_nsts_csic_cover_type",
-            "Store Category": "class",
-            "BISAC Category Description": "custitemcustitem_bisac",
-            "Publisher Name": "custitem_nsts_csic_imprint_pub",
-            "Vendor": "vendor",
+            "ISBN 10": "ISBN",
+            "EAN": "UPC_Code",
+            "Title": "Display_Name",
+            "Author": "Author",
+            "List Price": "MSRP",
+            "Cost": "Cost",
+            "Edition": "Edition",
+            "PubDate": "Publish_Date",
+            "Print Run": "Print_Run",
+            "Format Description": "Cover_Type",
+            "Store Category": "Class",
+            "BISAC Category Description": "BISAC",
+            "Publisher Name": "Publisher",
+            "Vendor": "Vendor",
         },
         inplace=True,
     )
 
     definite_articles = ["The ", "A ", "the ", "a "]
-    df1["displayname"] = df1["displayname"].apply(
+    df1["Display_Name"] = df1["Display_Name"].apply(
         lambda x: move_start_article(x, definite_articles)
     )
 
     new_cols = {
-        "externalid": "",
-        "custitem_nsts_csic_long_title": "",
-        "pricelevel": "Base Price",
-        "department": "",
-        "incomeaccount": "",
-        "shelving_category": "",
-        "Web Description": "",
+        "External_ID": "",
+        "Long_Title": "",
+        "Price_Level": "Base Price",
+        "Department": "",
+        "Income_Account": "",
+        "Shelving_Category": "",
+        "Web_Description": "",
         "Preferred_Location": "Main Campus Bookstore",
-        "Webstore Image Name": "",
+        "Webstore_Image_Name": "",
     }
     for index in range(first_row_idx, last_row_idx):
         for col, val in new_cols.items():
@@ -328,40 +326,40 @@ def rename_and_add_cols(df):
 
     alt_df = alt_df.drop(columns=["Subtitle", "Title:Subtitle"])
 
-    alt_df["externalid"] = alt_df["custitem_nsts_csic_isbn"]
+    alt_df["External_ID"] = alt_df["UPC_Code"]
 
-    alt_df["vendor"] = alt_df["vendor"].replace(vendor_dict)
+    alt_df["Vendor"] = alt_df["Vendor"].replace(vendor_dict)
 
-    alt_df["custitem_nsts_csic_pub_date"] = alt_df[
-        "custitem_nsts_csic_pub_date"
-    ].dt.strftime("%m/%d/%y")
+    alt_df["Publish_Date"] = alt_df["Publish_Date"].dt.strftime("%m/%d/%y")
 
-    alt_df["Webstore Image Name"] = alt_df["upccode"]
+    alt_df["ISBN"] = alt_df["UPC_Code"]
+
+    alt_df["Webstore_Image_Name"] = alt_df["UPC_Code"]
 
     col_order = [
-        "externalid",
-        "custitem_nsts_csic_isbn",
-        "upccode",
-        "Webstore Image Name",
+        "External_ID",
+        "ISBN",
+        "UPC_Code",
+        "Webstore_Image_Name",
         "item_name_number",
-        "displayname",
-        "custitem_nsts_csic_long_title",
-        "custitem_nsts_csic_author",
-        "listprice",
-        "pricelevel",
-        "costestimate",
-        "custitem_nsts_csic_edition",
-        "custitem_nsts_csic_pub_date",
-        "custitem_nsts_csic_printing",
-        "custitem_nsts_csic_cover_type",
-        "class",
-        "department",
-        "incomeaccount",
-        "custitemcustitem_bisac",
-        "shelving_category",
-        "custitem_nsts_csic_imprint_pub",
-        "vendor",
-        "Web Description",
+        "Display_Name",
+        "Long_Title",
+        "Author",
+        "MSRP",
+        "Price_Level",
+        "Cost",
+        "Edition",
+        "Publish_Date",
+        "Print_Run",
+        "Cover_Type",
+        "Class",
+        "Department",
+        "Income_Account",
+        "BISAC",
+        "Shelving_Category",
+        "Publisher",
+        "Vendor",
+        "Web_Description",
         "Series",
         "Preferred_Location",
     ]
@@ -372,10 +370,10 @@ def rename_and_add_cols(df):
 
 
 def set_cover(row):
-    if "Hardcover" in row["custitem_nsts_csic_cover_type"]:
-        row["custitem_nsts_csic_cover_type"] = "Hardcover"
-    elif "Other" in row["custitem_nsts_csic_cover_type"]:
-        row["custitem_nsts_csic_cover_type"] = "Non-book item"
+    if "Hardcover" in row["Cover_Type"]:
+        row["Cover_Type"] = "Hardcover"
+    elif "Other" in row["Cover_Type"]:
+        row["Cover_Type"] = "Non-book item"
     else:
         return row
     return row
@@ -508,9 +506,9 @@ def change_po(
         df = rename_and_add_cols(df)
         print(df)
         df = df.apply(set_cover, axis=1)
-        df["Web Description"] = df["upccode"].apply(get_images_and_desc)
+        df["Web_Description"] = df["UPC_Code"].apply(get_images_and_desc)
         for smart, standard in smart_quotes_map.items():
-            df["Web Description"] = df["Web Description"].str.replace(
+            df["Web_Description"] = df["Web_Description"].str.replace(
                 smart, standard, regex=False
             )
         resize_covers(dl_folder_home, f"{date_string}-resized_images", (600, 600))
@@ -540,10 +538,10 @@ def change_po(
         with pd.ExcelWriter(excel_save_path, engine="openpyxl") as writer:
             df.to_excel(writer, sheet_name=excel_name, index=False)
             format_cols = [
-                "externalid",
-                "custitem_nsts_csic_isbn",
-                "upccode",
-                "Webstore Image Name",
+                "External_ID",
+                "ISBN",
+                "UPC_Code",
+                "Webstore_Image_Name",
             ]
             for col_name in format_cols:
                 col_idx = df.columns.get_loc(col_name) + 1
