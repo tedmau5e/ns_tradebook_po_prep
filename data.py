@@ -139,7 +139,6 @@ cols_to_delete = [
     "Purchase Order",
     "Item #",
     "Author 2",
-    "Units",
     "Discount",
     "Discount Code",
     "Format",
