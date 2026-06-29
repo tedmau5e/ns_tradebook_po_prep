@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox, ttk
 import pandas as pd
 from data import cols_to_delete, vendor_dict, smart_quotes_map, trade_org
 import os
+import sys
 from pathlib import Path
 import requests as req
 from requests.exceptions import HTTPError
@@ -13,17 +14,17 @@ import os
 from file_handling import desktop_path
 import shutil
 
-# def resource_path(relative_path):
-#     try:
-#         base_path = sys._MEIPASS
-#     except Exception:
-#         base_path = os.path.abspath(".")
-#     return os.path.join(base_path, relative_path)
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
-# dotenv_path = resource_path("ISBNdb_API_Key.env")
+dotenv_path = resource_path("ISBNdb_API_Key.env")
 
-load_dotenv(dotenv_path="./ISBNdb_API_Key.env")
-# load_dotenv(dotenv_path=dotenv_path)
+# load_dotenv(dotenv_path="./ISBNdb_API_Key.env")
+load_dotenv(dotenv_path=dotenv_path)
 api_key = os.getenv("API_KEY")
 print(api_key)
 
