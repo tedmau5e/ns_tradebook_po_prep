@@ -1,0 +1,63 @@
+name: Build Workflow
+
+permissions:
+    contents: write
+
+on:
+    push:
+        #branches: master
+
+jobs:
+    build-windows:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v1
+            - name: Create ISBNdb_API_Key.env
+              shell: pwsh
+              run: |
+                "API_KEY=${{ secrets.API_KEY }}" | Out-File -FilePath ISBNdb_API_Key.env -Encoding ascii
+            - name: Check .env source exists
+              shell: pwsh
+              run: |
+                if (Test-Path "ISBNdb_API_Key.env") { Write-Output "ISBNdb_API_Key.env present" }
+                else { Write-Output "ISBNdb_API_Key.env missing"; exit 1 }
+            - name: Install Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: 3.14
+                architecture: 'x64'
+            - name: Install PyInstaller
+              run: |
+                python -m pip install --upgrade pip
+                pip install pyinstaller
+            - name: Install requirements
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+            - name: Load environment variables
+              run: |
+                python -c "from dotenv import load_dotenv; load_dotenv(dotenv_path='ISBNdb_API_Key.env')"
+            - name: Run PyInstaller
+              run: |
+                pyinstaller main.spec --clean
+            - uses: actions/upload-artifact@v4
+              with:
+                name: Tradebook_PO_Prep
+                path: dist/main.exe
+            
+            - name: Create Release
+              id: create_release
+              uses: softprops/action-gh-release@v2
+              with:
+                tag_name: ${{ github.ref_name }}
+                name: Release ${{ github.ref_name }}
+                generate_release_notes: false
+            
+            - name: Upload Release Asset
+              id: upload-release-assset
+              uses: softprops/action-gh/release@v2
+              with:
+                tag_name: ${{ github.ref_name }}
+                files: |
+                    dist/main.exe
