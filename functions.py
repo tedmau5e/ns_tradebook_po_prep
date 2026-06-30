@@ -14,12 +14,14 @@ import os
 from file_handling import desktop_path
 import shutil
 
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
+
 
 dotenv_path = resource_path("ISBNdb_API_Key.env")
 
@@ -40,6 +42,7 @@ def delete_junk_cols(df):
         "Title:Subtitle",
         "Author",
         "List Price",
+        "Units",
         "Cost",
         "Edition",
         "PubDate",
